@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unclosable Page</title>
+    <style>
+        body, html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div id="message">This page cannot be closed or unfocused.</div>
+    <script>
+        function preventClose(event) {
+            event.preventDefault();
+            event.returnValue = '';
+        }
+
+        function alertUser() {
+            alert("This page cannot be closed!");
+        }
+
+        function reopenInNewTab() {
+            let newTab = window.open(location.href, '_blank');
+            newTab.focus();
+            window.close();
+        }
+
+        function lockCursor() {
+            document.body.requestPointerLock = document.body.requestPointerLock || 
+                                               document.body.mozRequestPointerLock || 
+                                               document.body.webkitRequestPointerLock;
+            document.body.requestPointerLock();
+        }
+
+        // Prevent closing
+        window.addEventListener('beforeunload', preventClose);
+
+        // Alert when trying to close
+        window.addEventListener('unload', alertUser);
+
+        // Reopen in a new tab on focus loss
+        window.addEventListener('blur', reopenInNewTab);
+
+        // Reopen in a new tab on any key press
+        window.addEventListener('keydown', reopenInNewTab);
+
+        // Lock the cursor on load
+        window.onload = lockCursor;
+
+        // Request full screen on load
+        document.documentElement.requestFullscreen().catch(err => {
+            console.log(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+        });
+    </script>
+</body>
+</html>
